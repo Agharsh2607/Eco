@@ -77,6 +77,13 @@ function seedInMemory() {
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'EcoAdmin2026!Secure';
 
+console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+console.log('🔐 ADMIN CREDENTIALS LOADED');
+console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+console.log(`Username: ${ADMIN_USERNAME}`);
+console.log(`Password: ${ADMIN_PASSWORD ? '***' + ADMIN_PASSWORD.slice(-4) : 'NOT SET'}`);
+console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+
 // Google OAuth Strategy
 if(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET){
   passport.use(new GoogleStrategy({
@@ -364,14 +371,19 @@ function isAdmin(req, res, next) {
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
   
+  console.log('Admin login attempt:', { username, passwordLength: password?.length });
+  console.log('Expected:', { username: ADMIN_USERNAME, passwordLength: ADMIN_PASSWORD?.length });
+  
   if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
     const token = Buffer.from(`${username}:${password}`).toString('base64');
+    console.log('✓ Admin login successful');
     res.json({ 
       success: true, 
       token,
       message: 'Admin login successful' 
     });
   } else {
+    console.log('✗ Admin login failed - Invalid credentials');
     res.status(401).json({ error: 'Invalid admin credentials' });
   }
 });
