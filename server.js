@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
-const fs = require('fs');
 const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -18,96 +17,72 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'eco-traveller-secret-key',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
 }));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-// File-based storage paths
-const DATA_DIR = path.join(__dirname, 'data');
-const USERS_FILE = path.join(DATA_DIR, 'users.json');
-const HOTELS_FILE = path.join(DATA_DIR, 'hotels.json');
-
-// Create data directory if it doesn't exist
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR);
-}
-
-// Use in-memory data if MongoDB is not available
-let useInMemory = false;
+// In-memory storage for serverless (Vercel doesn't support file system)
 let inMemoryHotels = [];
 let inMemoryUsers = [];
 
-// Load users from file
-function loadUsersFromFile() {
-  try {
-    if (fs.existsSync(USERS_FILE)) {
-      const data = fs.readFileSync(USERS_FILE, 'utf8');
-      return JSON.parse(data);
+// Seed hotels data
+function seedInMemory() {
+  inMemoryHotels = [
+    {
+      name:'Green Haven Eco Resort',
+      location:'Bali, Indonesia',
+      price:220,
+      rating:4.8,
+      co2Savings:'-32%',
+      imageUrl:'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800',
+      tags:['Solar','Zero Waste','Organic Food']
+    },
+    {
+      name:'Nordic Nature Lodge',
+      location:'Norway',
+      price:260,
+      rating:4.9,
+      co2Savings:'-40%',
+      imageUrl:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+      tags:['Hydropower','Eco Architecture']
+    },
+    {
+      name:'Amazon Rainforest Retreat',
+      location:'Brazil',
+      price:180,
+      rating:4.7,
+      co2Savings:'-35%',
+      imageUrl:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800',
+      tags:['Rainwater','Local Materials']
+    },
+    {
+      name:'Alpine Eco Chalet',
+      location:'Switzerland',
+      price:300,
+      rating:4.9,
+      co2Savings:'-45%',
+      imageUrl:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+      tags:['Passive Heating','Low Carbon']
     }
-  } catch (err) {
-    console.log('Error loading users file:', err.message);
-  }
-  return [];
+  ];
 }
-
-// Save users to file
-function saveUsersToFile(users) {
-  try {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-    console.log('✓ Users saved to file');
-  } catch (err) {
-    console.log('Error saving users file:', err.message);
-  }
-}
-
-// Load hotels from file
-function loadHotelsFromFile() {
-  try {
-    if (fs.existsSync(HOTELS_FILE)) {
-      const data = fs.readFileSync(HOTELS_FILE, 'utf8');
-      return JSON.parse(data);
-    }
-  } catch (err) {
-    console.log('Error loading hotels file:', err.message);
-  }
-  return [];
-}
-
-// Save hotels to file
-function saveHotelsToFile(hotels) {
-  try {
-    fs.writeFileSync(HOTELS_FILE, JSON.stringify(hotels, null, 2));
-    console.log('✓ Hotels saved to file');
-  } catch (err) {
-    console.log('Error saving hotels file:', err.message);
-  }
-}
-
-// Initialize users from file
-inMemoryUsers = loadUsersFromFile();
-console.log(`✓ Loaded ${inMemoryUsers.length} users from file`);
 
 // Admin credentials from environment variables
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'EcoAdmin2026!Secure';
-
-console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-console.log('🔐 ADMIN CREDENTIALS');
-console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-console.log(`Username: ${ADMIN_USERNAME}`);
-console.log(`Password: ${ADMIN_PASSWORD}`);
-console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-console.log('⚠️  Change these in .env file for production!');
-console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
 // Google OAuth Strategy
 if(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET){
   passport.use(new GoogleStrategy({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/auth/google/callback"
+      callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:5000/auth/google/callback"
     },
     async function(accessToken, refreshToken, profile, cb) {
       try {
@@ -123,7 +98,6 @@ if(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET){
               createdAt: new Date().toISOString()
             };
             inMemoryUsers.push(user);
-            saveUsersToFile(inMemoryUsers); // Save to file
           }
           return cb(null, user);
         } else {
@@ -157,26 +131,63 @@ passport.deserializeUser((user, done) => {
   done(null, user);
 });
 
+function seedInMemory() {
+  inMemoryHotels = [
+    {
+      name:'Green Haven Eco Resort',
+      location:'Bali, Indonesia',
+      price:220,
+      rating:4.8,
+      co2Savings:'-32%',
+      imageUrl:'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800',
+      tags:['Solar','Zero Waste','Organic Food']
+    },
+    {
+      name:'Nordic Nature Lodge',
+      location:'Norway',
+      price:260,
+      rating:4.9,
+      co2Savings:'-40%',
+      imageUrl:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+      tags:['Hydropower','Eco Architecture']
+    },
+    {
+      name:'Amazon Rainforest Retreat',
+      location:'Brazil',
+      price:180,
+      rating:4.7,
+      co2Savings:'-35%',
+      imageUrl:'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800',
+      tags:['Rainwater','Local Materials']
+    },
+    {
+      name:'Alpine Eco Chalet',
+      location:'Switzerland',
+      price:300,
+      rating:4.9,
+      co2Savings:'-45%',
+      imageUrl:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+      tags:['Passive Heating','Low Carbon']
+    }
+  ];
+}
+
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ecotraveller';
 
+let useInMemory = true; // Default to in-memory for serverless
+
+// Try to connect to MongoDB
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 3000
+  serverSelectionTimeoutMS: 5000
 }).then(()=>{
   console.log('✓ MongoDB Connected');
   useInMemory = false;
 }).catch(err=>{
-  console.log('⚠️  MongoDB not available, using file-based storage');
-  console.log('   (Data persists in data/users.json)');
+  console.log('⚠️  MongoDB not available, using in-memory storage');
   useInMemory = true;
-  
-  // Load or seed hotels
-  inMemoryHotels = loadHotelsFromFile();
-  if(inMemoryHotels.length === 0) {
-    seedInMemory();
-    saveHotelsToFile(inMemoryHotels);
-  }
+  seedInMemory(); // Seed hotels
 });
 
 function seedInMemory() {
@@ -274,7 +285,6 @@ app.post('/api/signup', async(req,res)=>{
         createdAt: new Date().toISOString()
       };
       inMemoryUsers.push(newUser);
-      saveUsersToFile(inMemoryUsers); // Save to file
       res.json({user: {name, email}});
     } else {
       const exists = await User.findOne({email});
@@ -370,8 +380,7 @@ app.post('/api/admin/login', (req, res) => {
 app.get('/api/debug/users', isAdmin, (req, res) => {
   if(useInMemory){
     res.json({ 
-      storage: 'file-based (permanent)',
-      storageLocation: USERS_FILE,
+      storage: 'in-memory (serverless)',
       count: inMemoryUsers.length,
       users: inMemoryUsers.map(u => ({
         id: u.id,
@@ -400,4 +409,5 @@ app.get('/api/debug/users', isAdmin, (req, res) => {
 
 app.listen(5000,()=>console.log('Server running on port 5000'));
 
+// Export for Vercel
 module.exports = app;
