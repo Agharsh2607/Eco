@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CO2 Calculator - Eco Traveller</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white">
+
+<nav class="fixed w-full backdrop-blur-lg bg-white/10 border-b border-white/10 z-50">
+<div class="max-w-7xl mx-auto flex justify-between p-4">
+<h1 class="text-emerald-400 font-bold text-xl"><a href="/">Eco Traveller</a></h1>
+<div class="space-x-6">
+<a href="/" class="hover:text-emerald-400">Home</a>
+<a href="/calculator.html" class="text-emerald-400">Calculator</a>
+<a href="/stays.html" class="hover:text-emerald-400">Verified Stays</a>
+<a href="/community.html" class="hover:text-emerald-400">Community</a>
+<button class="bg-emerald-500 px-4 py-2 rounded-lg hover:bg-emerald-600">Get App</button>
+</div>
+</div>
+</nav>
+
+<div class="pt-20 max-w-4xl mx-auto px-4">
+
+<section class="py-10 text-center">
+<h1 class="text-5xl font-bold mb-4">CO2 Travel Calculator</h1>
+<p class="text-xl text-gray-300">Compare the carbon footprint of different travel methods</p>
+</section>
+
+<div class="bg-white/10 backdrop-blur-lg p-8 rounded-xl mb-10">
+<h2 class="text-2xl font-bold mb-6">Calculate Your Journey</h2>
+
+<div class="space-y-4">
+<div>
+<label class="block mb-2">From</label>
+<input id="from" type="text" placeholder="e.g., New York" class="w-full p-3 rounded bg-slate-800 border border-slate-700">
+</div>
+
+<div>
+<label class="block mb-2">To</label>
+<input id="to" type="text" placeholder="e.g., Los Angeles" class="w-full p-3 rounded bg-slate-800 border border-slate-700">
+</div>
+
+<div>
+<label class="block mb-2">Distance (km)</label>
+<input id="distance" type="number" placeholder="e.g., 4500" class="w-full p-3 rounded bg-slate-800 border border-slate-700">
+</div>
+
+<div>
+<label class="block mb-2">Travel Method</label>
+<select id="method" class="w-full p-3 rounded bg-slate-800 border border-slate-700">
+<option value="flight">Flight</option>
+<option value="train">Train</option>
+<option value="bus">Bus</option>
+<option value="car">Car</option>
+<option value="electric-car">Electric Car</option>
+</select>
+</div>
+
+<button onclick="calculate()" class="w-full bg-emerald-500 px-6 py-3 rounded-lg hover:bg-emerald-600 font-bold">
+Calculate CO2 Emissions
+</button>
+</div>
+</div>
+
+<div id="result" class="hidden bg-gradient-to-r from-emerald-500/20 to-blue-500/20 backdrop-blur-lg p-8 rounded-xl mb-10">
+<h2 class="text-3xl font-bold mb-6">Your Results</h2>
+<div id="resultContent"></div>
+</div>
+
+<section class="bg-white/10 backdrop-blur-lg p-8 rounded-xl mb-10">
+<h2 class="text-2xl font-bold mb-4">CO2 Emissions by Transport</h2>
+<p class="text-gray-300 mb-6">Average emissions per passenger per km</p>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span>✈️ Flight</span>
+<span class="text-red-400 font-bold">255g CO2/km</span>
+</div>
+<div class="flex justify-between items-center">
+<span>🚗 Car</span>
+<span class="text-orange-400 font-bold">192g CO2/km</span>
+</div>
+<div class="flex justify-between items-center">
+<span>🚌 Bus</span>
+<span class="text-yellow-400 font-bold">68g CO2/km</span>
+</div>
+<div class="flex justify-between items-center">
+<span>🚄 Train</span>
+<span class="text-emerald-400 font-bold">41g CO2/km</span>
+</div>
+<div class="flex justify-between items-center">
+<span>⚡ Electric Car</span>
+<span class="text-green-400 font-bold">53g CO2/km</span>
+</div>
+</div>
+</section>
+
+</div>
+
+<footer class="bg-black p-6 text-center mt-20">
+<p>© 2026 Eco Traveller</p>
+</footer>
+
+<script>
+const emissions = {
+  flight: 255,
+  car: 192,
+  bus: 68,
+  train: 41,
+  'electric-car': 53
+};
+
+function calculate() {
+  const from = document.getElementById('from').value;
+  const to = document.getElementById('to').value;
+  const distance = parseFloat(document.getElementById('distance').value);
+  const method = document.getElementById('method').value;
+
+  if (!from || !to || !distance) {
+    alert('Please fill in all fields');
+    return;
+  }
+
+  const co2 = (distance * emissions[method] / 1000).toFixed(2);
+  const flightCo2 = (distance * emissions.flight / 1000).toFixed(2);
+  const saved = (flightCo2 - co2).toFixed(2);
+
+  const resultDiv = document.getElementById('result');
+  const contentDiv = document.getElementById('resultContent');
+
+  let comparison = '';
+  if (method !== 'flight' && saved > 0) {
+    comparison = `
+      <div class="bg-emerald-500/20 p-4 rounded-lg mt-4">
+        <p class="text-xl font-bold text-emerald-400">🎉 Great Choice!</p>
+        <p class="mt-2">You saved <span class="text-2xl font-bold">${saved} kg</span> of CO2 compared to flying!</p>
+      </div>
+    `;
+  }
+
+  contentDiv.innerHTML = `
+    <div class="text-center">
+      <p class="text-gray-300">Journey: <span class="font-bold">${from}</span> → <span class="font-bold">${to}</span></p>
+      <p class="text-gray-300">Distance: <span class="font-bold">${distance} km</span></p>
+      <p class="text-5xl font-bold text-emerald-400 my-6">${co2} kg CO2</p>
+      <p class="text-gray-300">Using: <span class="font-bold capitalize">${method.replace('-', ' ')}</span></p>
+    </div>
+    ${comparison}
+  `;
+
+  resultDiv.classList.remove('hidden');
+  resultDiv.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

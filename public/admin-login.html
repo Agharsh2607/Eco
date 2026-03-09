@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - Eco Traveller</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white">
+
+<div class="min-h-screen flex items-center justify-center px-4 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920');">
+<div class="backdrop-blur-xl bg-black/40 p-10 rounded-2xl max-w-md w-full border border-red-500/50">
+
+<div class="text-center mb-8">
+<div class="text-6xl mb-4">🔐</div>
+<h1 class="text-4xl font-bold mb-2 text-red-400">Admin Access</h1>
+<p class="text-gray-300">Authorized Personnel Only</p>
+</div>
+
+<form id="adminLoginForm" class="space-y-4">
+<div>
+<label class="block mb-2 text-sm">Admin Username</label>
+<input type="text" id="adminUsername" placeholder="Enter admin username" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-red-500 focus:outline-none" required>
+</div>
+
+<div>
+<label class="block mb-2 text-sm">Admin Password</label>
+<input type="password" id="adminPassword" placeholder="Enter admin password" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-red-500 focus:outline-none" required>
+</div>
+
+<div id="errorMsg" class="hidden bg-red-500/20 border border-red-500 text-red-300 px-4 py-3 rounded-lg text-sm">
+Invalid credentials
+</div>
+
+<button type="submit" class="w-full bg-red-500 py-3 rounded-lg font-bold hover:bg-red-600 transition">
+🔓 Access Admin Panel
+</button>
+
+<div class="text-center mt-4">
+<a href="/" class="text-gray-400 hover:text-gray-300 text-sm">← Back to Home</a>
+</div>
+</form>
+
+</div>
+</div>
+
+<script>
+// Check if already logged in
+if (localStorage.getItem('isAdmin') && localStorage.getItem('adminToken')) {
+  window.location.href = '/admin.html';
+}
+
+document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const username = document.getElementById('adminUsername').value;
+  const password = document.getElementById('adminPassword').value;
+  const errorMsg = document.getElementById('errorMsg');
+  
+  errorMsg.classList.add('hidden');
+  
+  try {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    
+    const data = await res.json();
+    
+    if (res.ok) {
+      // Store admin token
+      localStorage.setItem('adminToken', data.token);
+      localStorage.setItem('isAdmin', 'true');
+      
+      // Redirect to admin dashboard
+      window.location.href = '/admin.html';
+    } else {
+      errorMsg.textContent = data.error || 'Invalid credentials';
+      errorMsg.classList.remove('hidden');
+    }
+  } catch (err) {
+    errorMsg.textContent = 'Login error. Please try again.';
+    errorMsg.classList.remove('hidden');
+  }
+});
+</script>
+
+</body>
+</html>

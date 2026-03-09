@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community - Eco Traveller</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white">
+
+<nav class="fixed w-full backdrop-blur-lg bg-white/10 border-b border-white/10 z-50">
+<div class="max-w-7xl mx-auto flex justify-between p-4">
+<h1 class="text-emerald-400 font-bold text-xl"><a href="/">Eco Traveller</a></h1>
+<div class="space-x-6">
+<a href="/" class="hover:text-emerald-400">Home</a>
+<a href="/calculator.html" class="hover:text-emerald-400">Calculator</a>
+<a href="/stays.html" class="hover:text-emerald-400">Verified Stays</a>
+<a href="/community.html" class="text-emerald-400">Community</a>
+<button class="bg-emerald-500 px-4 py-2 rounded-lg hover:bg-emerald-600">Get App</button>
+</div>
+</div>
+</nav>
+
+<div class="pt-20 max-w-7xl mx-auto px-4">
+
+<section class="py-10">
+<h1 class="text-5xl font-bold mb-4">Join the Eco Travel Community</h1>
+<p class="text-xl text-gray-300">Connect with travelers who care about the planet</p>
+</section>
+
+<section class="grid md:grid-cols-2 gap-8 mb-10">
+<div class="bg-white/10 backdrop-blur-lg p-8 rounded-xl">
+<h2 class="text-3xl font-bold mb-4">Share Your Journey</h2>
+<p class="text-gray-300 mb-6">Post your eco-friendly travel experiences and inspire others</p>
+<button class="bg-emerald-500 px-6 py-3 rounded-lg hover:bg-emerald-600">Create Post</button>
+</div>
+
+<div class="bg-white/10 backdrop-blur-lg p-8 rounded-xl">
+<h2 class="text-3xl font-bold mb-4">Find Travel Buddies</h2>
+<p class="text-gray-300 mb-6">Connect with like-minded travelers for your next adventure</p>
+<button class="bg-emerald-500 px-6 py-3 rounded-lg hover:bg-emerald-600">Browse Members</button>
+</div>
+</section>
+
+<section class="mb-10">
+<h2 class="text-3xl font-bold mb-6">Recent Stories</h2>
+<div class="grid md:grid-cols-3 gap-6" id="stories"></div>
+</section>
+
+<section class="bg-white/10 backdrop-blur-lg p-8 rounded-xl mb-10">
+<h2 class="text-3xl font-bold mb-6">Community Stats</h2>
+<div class="grid grid-cols-4 gap-6 text-center">
+<div>
+<p class="text-4xl font-bold text-emerald-400">15,234</p>
+<p class="text-gray-300">Members</p>
+</div>
+<div>
+<p class="text-4xl font-bold text-emerald-400">3,421</p>
+<p class="text-gray-300">Stories Shared</p>
+</div>
+<div>
+<p class="text-4xl font-bold text-emerald-400">89</p>
+<p class="text-gray-300">Countries</p>
+</div>
+<div>
+<p class="text-4xl font-bold text-emerald-400">1.2M kg</p>
+<p class="text-gray-300">CO2 Saved</p>
+</div>
+</div>
+</section>
+
+</div>
+
+<footer class="bg-black p-6 text-center mt-20">
+<p>© 2026 Eco Traveller</p>
+</footer>
+
+<script>
+const stories = [
+  {
+    user: 'Sarah M.',
+    location: 'Costa Rica',
+    image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23',
+    text: 'Amazing eco-lodge experience in the rainforest!',
+    co2Saved: '45kg'
+  },
+  {
+    user: 'John D.',
+    location: 'Iceland',
+    image: 'https://images.unsplash.com/photo-1504893524553-b855bce32c67',
+    text: 'Geothermal powered hotel was incredible',
+    co2Saved: '38kg'
+  },
+  {
+    user: 'Emma L.',
+    location: 'New Zealand',
+    image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800',
+    text: 'Biked through stunning landscapes',
+    co2Saved: '52kg'
+  }
+];
+
+const container = document.getElementById('stories');
+stories.forEach(s => {
+  container.innerHTML += `
+    <div class="bg-white/10 backdrop-blur-lg rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
+      <img src="${s.image}" class="w-full h-48 object-cover">
+      <div class="p-4">
+        <h3 class="font-bold text-lg">${s.user}</h3>
+        <p class="text-emerald-400">${s.location}</p>
+        <p class="text-gray-300 mt-2">${s.text}</p>
+        <p class="text-sm mt-2 text-emerald-300">Saved ${s.co2Saved} CO2</p>
+      </div>
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>

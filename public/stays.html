@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verified Stays - Eco Traveller</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white">
+
+<nav class="fixed w-full backdrop-blur-lg bg-white/10 border-b border-white/10 z-50">
+<div class="max-w-7xl mx-auto flex justify-between p-4">
+<h1 class="text-emerald-400 font-bold text-xl"><a href="/">Eco Traveller</a></h1>
+<div class="space-x-6">
+<a href="/" class="hover:text-emerald-400">Home</a>
+<a href="/calculator.html" class="hover:text-emerald-400">Calculator</a>
+<a href="/stays.html" class="text-emerald-400">Verified Stays</a>
+<a href="/community.html" class="hover:text-emerald-400">Community</a>
+<button class="bg-emerald-500 px-4 py-2 rounded-lg hover:bg-emerald-600">Get App</button>
+</div>
+</div>
+</nav>
+
+<div class="pt-20 max-w-7xl mx-auto px-4">
+
+<section class="py-10">
+<h1 class="text-5xl font-bold mb-4">Verified Eco Stays</h1>
+<p class="text-xl text-gray-300">Handpicked sustainable accommodations around the world</p>
+</section>
+
+<section class="mb-10">
+<div class="bg-white/10 backdrop-blur-lg p-6 rounded-xl">
+<h2 class="text-xl font-bold mb-4">Filter & Search</h2>
+<div class="grid md:grid-cols-4 gap-4">
+<input type="text" placeholder="Search location..." class="p-3 rounded bg-slate-800 border border-slate-700">
+<select class="p-3 rounded bg-slate-800 border border-slate-700">
+<option>All Prices</option>
+<option>Under $100</option>
+<option>$100-$200</option>
+<option>$200-$300</option>
+<option>$300+</option>
+</select>
+<select class="p-3 rounded bg-slate-800 border border-slate-700">
+<option>All Ratings</option>
+<option>4.5+ Stars</option>
+<option>4.0+ Stars</option>
+</select>
+<button class="bg-emerald-500 px-6 py-3 rounded-lg hover:bg-emerald-600">Search</button>
+</div>
+</div>
+</section>
+
+<section class="mb-10">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-2xl font-bold">Available Properties</h2>
+<p class="text-gray-300"><span id="count">0</span> eco-friendly stays found</p>
+</div>
+<div id="hotels" class="grid md:grid-cols-3 gap-6"></div>
+</section>
+
+<section class="bg-gradient-to-r from-emerald-500/20 to-blue-500/20 backdrop-blur-lg p-8 rounded-xl mb-10">
+<h2 class="text-2xl font-bold mb-4">Why Choose Verified Eco Stays?</h2>
+<div class="grid md:grid-cols-3 gap-6 mt-6">
+<div>
+<div class="text-4xl mb-2">✓</div>
+<h3 class="font-bold mb-2">Certified Green</h3>
+<p class="text-gray-300">All properties meet strict environmental standards</p>
+</div>
+<div>
+<div class="text-4xl mb-2">🌱</div>
+<h3 class="font-bold mb-2">Carbon Neutral</h3>
+<p class="text-gray-300">Offset your stay's carbon footprint automatically</p>
+</div>
+<div>
+<div class="text-4xl mb-2">💚</div>
+<h3 class="font-bold mb-2">Support Local</h3>
+<p class="text-gray-300">Properties support local communities and ecosystems</p>
+</div>
+</div>
+</section>
+
+</div>
+
+<footer class="bg-black p-6 text-center mt-20">
+<p>© 2026 Eco Traveller</p>
+</footer>
+
+<script>
+async function loadHotels(){
+  try {
+    const res = await fetch('/api/hotels');
+    const hotels = await res.json();
+
+    const container = document.getElementById('hotels');
+    const countEl = document.getElementById('count');
+    
+    countEl.textContent = hotels.length;
+
+    hotels.forEach(h=>{
+      const card = `
+        <div class="bg-white/10 backdrop-blur-lg rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
+          <img src="${h.imageUrl}" class="w-full h-48 object-cover">
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2">${h.name}</h3>
+            <p class="text-gray-300 mb-2">📍 ${h.location}</p>
+            <div class="flex justify-between items-center mb-3">
+              <p class="text-2xl font-bold">$${h.price}<span class="text-sm text-gray-400">/night</span></p>
+              <p class="text-yellow-400">⭐ ${h.rating}</p>
+            </div>
+            <p class="text-emerald-400 font-semibold mb-3">🌍 CO2 ${h.co2Savings}</p>
+            <div class="flex gap-2 flex-wrap">
+              ${h.tags.map(tag=>`<span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-xs">${tag}</span>`).join('')}
+            </div>
+            <button class="w-full mt-4 bg-emerald-500 px-4 py-2 rounded-lg hover:bg-emerald-600">Book Now</button>
+          </div>
+        </div>`;
+
+      container.innerHTML += card;
+    });
+  } catch(err) {
+    document.getElementById('hotels').innerHTML = `
+      <div class="col-span-3 text-center p-10 bg-red-500/20 rounded-xl">
+        <p class="text-xl">⚠️ Unable to load hotels. Please make sure MongoDB is running.</p>
+        <p class="text-gray-300 mt-2">Run: <code class="bg-black/50 px-2 py-1 rounded">mongod</code></p>
+      </div>
+    `;
+  }
+}
+
+loadHotels();
+</script>
+
+</body>
+</html>

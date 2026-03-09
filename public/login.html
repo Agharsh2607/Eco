@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Eco Traveller</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white">
+
+<nav class="fixed w-full backdrop-blur-lg bg-white/10 border-b border-white/10 z-50">
+<div class="max-w-7xl mx-auto flex justify-between p-4">
+<h1 class="text-emerald-400 font-bold text-xl"><a href="/">Eco Traveller</a></h1>
+<div class="space-x-6">
+<a href="/" class="hover:text-emerald-400">Home</a>
+<a href="/calculator.html" class="hover:text-emerald-400">Calculator</a>
+<a href="/stays.html" class="hover:text-emerald-400">Verified Stays</a>
+<a href="/community.html" class="hover:text-emerald-400">Community</a>
+</div>
+</div>
+</nav>
+
+<div class="min-h-screen flex items-center justify-center px-4 pt-20 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920');">
+<div class="backdrop-blur-xl bg-black/40 p-10 rounded-2xl max-w-md w-full border border-white/10">
+
+<div class="text-center mb-8">
+<h1 class="text-4xl font-bold mb-2">Welcome Back</h1>
+<p class="text-gray-300">Login to continue your eco journey</p>
+</div>
+
+<div class="flex gap-4 mb-6">
+<button onclick="showLogin()" id="loginTab" class="flex-1 py-2 rounded-lg bg-emerald-500 font-bold">Login</button>
+<button onclick="showSignup()" id="signupTab" class="flex-1 py-2 rounded-lg bg-white/10 font-bold">Sign Up</button>
+</div>
+
+<!-- Login Form -->
+<form id="loginForm" class="space-y-4">
+<div>
+<label class="block mb-2 text-sm">Email</label>
+<input type="email" id="loginEmail" placeholder="your@email.com" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
+</div>
+
+<div>
+<label class="block mb-2 text-sm">Password</label>
+<input type="password" id="loginPassword" placeholder="••••••••" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
+</div>
+
+<div class="flex justify-between items-center text-sm">
+<label class="flex items-center">
+<input type="checkbox" class="mr-2">
+<span>Remember me</span>
+</label>
+<a href="#" class="text-emerald-400 hover:text-emerald-300">Forgot password?</a>
+</div>
+
+<button type="submit" class="w-full bg-emerald-500 py-3 rounded-lg font-bold hover:bg-emerald-600 transition">
+Login
+</button>
+
+<div class="text-center text-sm text-gray-400 my-4">or continue with</div>
+
+<div class="grid grid-cols-2 gap-4">
+<a href="/auth/google" class="bg-white text-black py-2 rounded-lg hover:bg-gray-100 transition text-center font-semibold">
+<span class="text-red-500">G</span> Google
+</a>
+<button type="button" class="bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition">
+📘 Facebook
+</button>
+</div>
+</form>
+
+<!-- Signup Form -->
+<form id="signupForm" class="space-y-4 hidden">
+<div>
+<label class="block mb-2 text-sm">Full Name</label>
+<input type="text" id="signupName" placeholder="John Doe" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
+</div>
+
+<div>
+<label class="block mb-2 text-sm">Email</label>
+<input type="email" id="signupEmail" placeholder="your@email.com" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
+</div>
+
+<div>
+<label class="block mb-2 text-sm">Password</label>
+<input type="password" id="signupPassword" placeholder="••••••••" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
+</div>
+
+<div>
+<label class="block mb-2 text-sm">Confirm Password</label>
+<input type="password" id="signupConfirm" placeholder="••••••••" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
+</div>
+
+<label class="flex items-center text-sm">
+<input type="checkbox" class="mr-2" required>
+<span>I agree to the <a href="#" class="text-emerald-400">Terms & Conditions</a></span>
+</label>
+
+<button type="submit" class="w-full bg-emerald-500 py-3 rounded-lg font-bold hover:bg-emerald-600 transition">
+Create Account
+</button>
+</form>
+
+</div>
+</div>
+
+<script>
+function showLogin() {
+  document.getElementById('loginForm').classList.remove('hidden');
+  document.getElementById('signupForm').classList.add('hidden');
+  document.getElementById('loginTab').classList.add('bg-emerald-500');
+  document.getElementById('loginTab').classList.remove('bg-white/10');
+  document.getElementById('signupTab').classList.remove('bg-emerald-500');
+  document.getElementById('signupTab').classList.add('bg-white/10');
+}
+
+function showSignup() {
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('signupForm').classList.remove('hidden');
+  document.getElementById('signupTab').classList.add('bg-emerald-500');
+  document.getElementById('signupTab').classList.remove('bg-white/10');
+  document.getElementById('loginTab').classList.remove('bg-emerald-500');
+  document.getElementById('loginTab').classList.add('bg-white/10');
+}
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+      alert('Login successful!');
+      window.location.href = '/';
+    } else {
+      alert(data.error || 'Login failed');
+    }
+  } catch (err) {
+    alert('Login error');
+  }
+});
+
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('signupName').value;
+  const email = document.getElementById('signupEmail').value;
+  const password = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupConfirm').value;
+
+  if (password !== confirm) {
+    alert('Passwords do not match');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem('user', JSON.stringify(data.user));
+      alert('Account created successfully!');
+      window.location.href = '/';
+    } else {
+      alert(data.error || 'Signup failed');
+    }
+  } catch (err) {
+    alert('Signup error');
+  }
+});
+</script>
+
+</body>
+</html>

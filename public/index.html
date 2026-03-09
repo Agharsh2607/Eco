@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eco Traveller</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white">
+
+<nav class="fixed w-full backdrop-blur-lg bg-white/10 border-b border-white/10 z-50">
+<div class="max-w-7xl mx-auto flex justify-between p-4">
+<h1 class="text-emerald-400 font-bold text-xl"><a href="/">Eco Traveller</a></h1>
+<div class="space-x-6 flex items-center">
+<a href="/" class="text-emerald-400">Home</a>
+<a href="/calculator.html" class="hover:text-emerald-400">Calculator</a>
+<a href="/stays.html" class="hover:text-emerald-400">Verified Stays</a>
+<a href="/community.html" class="hover:text-emerald-400">Community</a>
+<div id="authButtons">
+<a href="/login.html" class="bg-emerald-500 px-4 py-2 rounded-lg hover:bg-emerald-600">Login</a>
+</div>
+</div>
+</div>
+</nav>
+
+<section class="h-screen flex items-center justify-center bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee');">
+<div class="text-center backdrop-blur-sm bg-black/30 p-10 rounded-2xl">
+<h1 class="text-5xl font-bold">Travel the World, Save the Planet.</h1>
+<p class="mt-4 text-xl">AI-powered itineraries and verified green stays.</p>
+
+<div class="mt-6 bg-white/10 backdrop-blur-lg p-6 rounded-xl">
+<input id="from" placeholder="From" class="text-black p-2 m-2 rounded">
+<input id="to" placeholder="To" class="text-black p-2 m-2 rounded">
+<button onclick="calc()" class="bg-emerald-500 px-4 py-2 rounded hover:bg-emerald-600">Calculate</button>
+</div>
+
+</div>
+</section>
+
+<section id="stats" class="py-20 grid grid-cols-3 text-center bg-slate-800">
+<div>
+<h2 class="text-4xl font-bold text-emerald-400">12000+</h2>
+<p class="mt-2">Verified Stays</p>
+</div>
+<div>
+<h2 class="text-4xl font-bold text-emerald-400">500 Tons</h2>
+<p class="mt-2">CO2 Saved</p>
+</div>
+<div>
+<h2 class="text-4xl font-bold text-emerald-400">25 Countries</h2>
+<p class="mt-2">Covered</p>
+</div>
+</section>
+
+<section id="stays" class="max-w-7xl mx-auto py-20 px-4">
+<div class="flex justify-between items-center mb-10">
+<h2 class="text-3xl font-bold">Featured Eco Stays</h2>
+<a href="/stays.html" class="text-emerald-400 hover:text-emerald-300">View All →</a>
+</div>
+<div id="hotels" class="grid md:grid-cols-3 gap-6"></div>
+</section>
+
+<footer class="bg-black p-6 text-center">
+<p>© 2026 Eco Traveller</p>
+</footer>
+
+<script>
+async function loadHotels(){
+const res = await fetch('/api/hotels');
+const hotels = await res.json();
+
+const container = document.getElementById('hotels');
+
+hotels.forEach(h=>{
+const card = `
+<div class="bg-white/10 backdrop-blur-lg rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
+<img src="${h.imageUrl}" class="w-full h-40 object-cover">
+<div class="p-4">
+<h3 class="text-xl font-bold">${h.name}</h3>
+<p class="text-gray-300">${h.location}</p>
+<p class="text-2xl font-bold mt-2">$${h.price}<span class="text-sm">/night</span></p>
+<p class="text-emerald-400 font-semibold">CO2 ${h.co2Savings}</p>
+<div class="flex gap-2 mt-2 flex-wrap">
+${h.tags.map(tag=>`<span class="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded text-xs">${tag}</span>`).join('')}
+</div>
+</div>
+</div>`;
+
+container.innerHTML += card;
+});
+}
+
+function calc(){
+alert("You saved 124kg of CO2 by choosing train over flight.");
+}
+
+// Check if user is logged in
+const user = JSON.parse(localStorage.getItem('user') || 'null');
+const authButtons = document.getElementById('authButtons');
+if(user){
+authButtons.innerHTML = `
+<span class="text-gray-300">Hi, ${user.name}</span>
+<button onclick="logout()" class="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600">Logout</button>
+`;
+}
+
+function logout(){
+localStorage.removeItem('user');
+window.location.reload();
+}
+
+loadHotels();
+</script>
+
+</body>
+</html>

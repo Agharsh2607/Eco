@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login - Eco Traveller</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white">
+
+<!-- Check admin authentication -->
+<script>
+const isAdmin = localStorage.getItem('isAdmin');
+const adminToken = localStorage.getItem('adminToken');
+
+if (!isAdmin || !adminToken) {
+  window.location.href = '/admin-login.html';
+}
+</script>
+
+<div class="min-h-screen flex items-center justify-center px-4 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920');">
+<div class="backdrop-blur-xl bg-black/40 p-10 rounded-2xl max-w-md w-full border border-red-500/50">
+
+<div class="text-center mb-8">
+<div class="text-6xl mb-4">🔐</div>
+<h1 class="text-4xl font-bold mb-2 text-red-400">Admin Access</h1>
+<p class="text-gray-300">Authorized Personnel Only</p>
+</div>
+
+<form id="adminLoginForm" class="space-y-4">
+<div>
+<label class="block mb-2 text-sm">Admin Username</label>
+<input type="text" id="adminUsername" placeholder="Enter admin username" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-red-500 focus:outline-none" required>
+</div>
+
+<div>
+<label class="block mb-2 text-sm">Admin Password</label>
+<input type="password" id="adminPassword" placeholder="Enter admin password" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-red-500 focus:outline-none" required>
+</div>
+
+<div id="errorMsg" class="hidden bg-red-500/20 border border-red-500 text-red-300 px-4 py-3 rounded-lg text-sm">
+Invalid credentials
+</div>
+
+<button type="submit" class="w-full bg-red-500 py-3 rounded-lg font-bold hover:bg-red-600 transition">
+🔓 Access Admin Panel
+</button>
+
+<div class="text-center mt-4">
+<a href="/" class="text-gray-400 hover:text-gray-300 text-sm">← Back to Home</a>
+</div>
+</form>
+
+</div>
+</div>
+
+<script>
+document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const username = document.getElementById('adminUsername').value;
+  const password = document.getElementById('adminPassword').value;
+  const errorMsg = document.getElementById('errorMsg');
+  
+  errorMsg.classList.add('hidden');
+  
+  try {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    
+    const data = await res.json();
+    
+    if (res.ok) {
+      // Store admin token
+      localStorage.setItem('adminToken', data.token);
+      localStorage.setItem('isAdmin', 'true');
+      
+      // Redirect to admin dashboard
+      window.location.href = '/admin.html';
+    } else {
+      errorMsg.textContent = data.error || 'Invalid credentials';
+      errorMsg.classList.remove('hidden');
+    }
+  } catch (err) {
+    errorMsg.textContent = 'Login error. Please try again.';
+    errorMsg.classList.remove('hidden');
+  }
+});
+</script>
+
+</body>
+</html>
+
+<nav class="fixed w-full backdrop-blur-lg bg-white/10 border-b border-white/10 z-50">
+<div class="max-w-7xl mx-auto flex justify-between p-4">
+<h1 class="text-emerald-400 font-bold text-xl"><a href="/">Eco Traveller</a></h1>
+<div class="space-x-6 flex items-center">
+<a href="/" class="hover:text-emerald-400">Home</a>
+<a href="/admin.html" class="text-red-400">Admin</a>
+<button onclick="adminLogout()" class="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600">🔒 Logout</button>
+</div>
+</div>
+</nav>
+
+<div class="pt-20 max-w-7xl mx-auto px-4">
+
+<section class="py-10">
+<h1 class="text-5xl font-bold mb-4">Admin Dashboard</h1>
+<p class="text-xl text-gray-300">View all registered users and system data</p>
+</section>
+
+<!-- Storage Info -->
+<section class="mb-10">
+<div class="bg-gradient-to-r from-emerald-500/20 to-blue-500/20 backdrop-blur-lg p-6 rounded-xl">
+<h2 class="text-2xl font-bold mb-4">Storage Information</h2>
+<div class="grid md:grid-cols-3 gap-4">
+<div>
+<p class="text-gray-300">Storage Type</p>
+<p class="text-2xl font-bold" id="storageType">Loading...</p>
+</div>
+<div>
+<p class="text-gray-300">Total Users</p>
+<p class="text-2xl font-bold text-emerald-400" id="userCount">0</p>
+</div>
+<div>
+<p class="text-gray-300">Status</p>
+<p class="text-2xl font-bold text-green-400">🟢 Active</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Users Table -->
+<section class="mb-10">
+<div class="bg-white/10 backdrop-blur-lg rounded-xl overflow-hidden">
+<div class="p-6 border-b border-white/10">
+<h2 class="text-2xl font-bold">Registered Users</h2>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full">
+<thead class="bg-white/5">
+<tr>
+<th class="px-6 py-3 text-left">#</th>
+<th class="px-6 py-3 text-left">Name</th>
+<th class="px-6 py-3 text-left">Email</th>
+<th class="px-6 py-3 text-left">Auth Method</th>
+<th class="px-6 py-3 text-left">Status</th>
+</tr>
+</thead>
+<tbody id="usersTable">
+<tr>
+<td colspan="5" class="px-6 py-8 text-center text-gray-400">
+Loading users...
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<!-- Browser Storage Info -->
+<section class="mb-10">
+<div class="bg-white/10 backdrop-blur-lg p-6 rounded-xl">
+<h2 class="text-2xl font-bold mb-4">Current Browser Session</h2>
+<div id="browserSession" class="bg-slate-800 p-4 rounded-lg">
+<pre id="sessionData" class="text-sm text-gray-300">Loading...</pre>
+</div>
+</div>
+</section>
+
+<!-- Quick Actions -->
+<section class="mb-10">
+<div class="bg-white/10 backdrop-blur-lg p-6 rounded-xl">
+<h2 class="text-2xl font-bold mb-4">Quick Actions</h2>
+<div class="flex gap-4">
+<button onclick="refreshData()" class="bg-emerald-500 px-6 py-3 rounded-lg hover:bg-emerald-600">
+🔄 Refresh Data
+</button>
+<button onclick="clearBrowserData()" class="bg-red-500 px-6 py-3 rounded-lg hover:bg-red-600">
+🗑️ Clear Browser Data
+</button>
+<button onclick="exportData()" class="bg-blue-500 px-6 py-3 rounded-lg hover:bg-blue-600">
+📥 Export JSON
+</button>
+</div>
+</div>
+</section>
+
+</div>
+
+<footer class="bg-black p-6 text-center mt-20">
+<p>© 2026 Eco Traveller - Admin Dashboard</p>
+</footer>
+
+<script>
+let usersData = [];
+
+function adminLogout() {
+  localStorage.removeItem('adminToken');
+  localStorage.removeItem('isAdmin');
+  window.location.href = '/admin-login.html';
+}
+
+async function loadUsers() {
+  const adminToken = localStorage.getItem('adminToken');
+  
+  try {
+    const res = await fetch('/api/debug/users', {
+      headers: {
+        'Authorization': `Basic ${adminToken}`
+      }
+    });
+    
+    if (res.status === 401) {
+      alert('Session expired. Please login again.');
+      adminLogout();
+      return;
+    }
+    
+    const data = await res.json();
+    
+    usersData = data.users;
+    
+    // Update storage info
+    document.getElementById('storageType').textContent = 
+      data.storage === 'in-memory' ? '💾 In-Memory (Temporary)' : 
+      data.storage === 'file-based (permanent)' ? '📁 File-Based (Permanent)' :
+      '🗄️ MongoDB (Permanent)';
+    document.getElementById('userCount').textContent = data.count;
+    
+    // Update users table
+    const tbody = document.getElementById('usersTable');
+    
+    if(data.count === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+            No users registered yet. <a href="/login.html" class="text-emerald-400">Create an account</a>
+          </td>
+        </tr>
+      `;
+    } else {
+      tbody.innerHTML = data.users.map((user, index) => `
+        <tr class="border-t border-white/10 hover:bg-white/5">
+          <td class="px-6 py-4">${index + 1}</td>
+          <td class="px-6 py-4 font-semibold">${user.name}</td>
+          <td class="px-6 py-4 text-gray-300">${user.email}</td>
+          <td class="px-6 py-4">
+            ${user.googleId ? 
+              '<span class="bg-red-500/20 text-red-300 px-3 py-1 rounded-full text-xs">🔵 Google</span>' : 
+              '<span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-xs">📧 Email</span>'
+            }
+            ${user.createdAt ? `<br><span class="text-xs text-gray-500">${new Date(user.createdAt).toLocaleString()}</span>` : ''}
+          </td>
+          <td class="px-6 py-4">
+            <span class="text-green-400">✓ Active</span>
+          </td>
+        </tr>
+      `).join('');
+    }
+    
+  } catch(err) {
+    document.getElementById('usersTable').innerHTML = `
+      <tr>
+        <td colspan="5" class="px-6 py-8 text-center text-red-400">
+          ⚠️ Error loading users: ${err.message}
+        </td>
+      </tr>
+    `;
+  }
+}
+
+function loadBrowserSession() {
+  const user = localStorage.getItem('user');
+  const sessionEl = document.getElementById('sessionData');
+  
+  if(user) {
+    try {
+      const userData = JSON.parse(user);
+      sessionEl.textContent = JSON.stringify(userData, null, 2);
+    } catch(e) {
+      sessionEl.textContent = user;
+    }
+  } else {
+    sessionEl.textContent = 'No user logged in (localStorage is empty)';
+  }
+}
+
+function refreshData() {
+  loadUsers();
+  loadBrowserSession();
+  alert('✓ Data refreshed!');
+}
+
+function clearBrowserData() {
+  if(confirm('Clear browser localStorage? You will be logged out.')) {
+    localStorage.clear();
+    loadBrowserSession();
+    alert('✓ Browser data cleared!');
+  }
+}
+
+function exportData() {
+  const dataStr = JSON.stringify(usersData, null, 2);
+  const dataBlob = new Blob([dataStr], {type: 'application/json'});
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'eco-traveller-users.json';
+  link.click();
+}
+
+// Load data on page load
+loadUsers();
+loadBrowserSession();
+
+// Auto-refresh every 10 seconds
+setInterval(() => {
+  loadUsers();
+  loadBrowserSession();
+}, 10000);
+</script>
+
+</body>
+</html>
