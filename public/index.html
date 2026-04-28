@@ -3,114 +3,262 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eco Traveller</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<title>Eco Traveller — Smart Travel. Sustainable Future.</title>
+<meta name="description" content="AI-powered eco-friendly travel platform with real-time route comparison, CO2 tracking, and verified green stays.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
 </head>
-<body class="bg-slate-900 text-white">
+<body>
 
-<nav class="fixed w-full backdrop-blur-lg bg-white/10 border-b border-white/10 z-50">
-<div class="max-w-7xl mx-auto flex justify-between p-4">
-<h1 class="text-emerald-400 font-bold text-xl"><a href="/">Eco Traveller</a></h1>
-<div class="space-x-6 flex items-center">
-<a href="/" class="text-emerald-400">Home</a>
-<a href="/calculator.html" class="hover:text-emerald-400">Calculator</a>
-<a href="/stays.html" class="hover:text-emerald-400">Verified Stays</a>
-<a href="/community.html" class="hover:text-emerald-400">Community</a>
-<div id="authButtons">
-<a href="/login.html" class="bg-emerald-500 px-4 py-2 rounded-lg hover:bg-emerald-600">Login</a>
-</div>
-</div>
+<!-- Ambient blobs -->
+<div class="blob blob-blue"></div>
+<div class="blob blob-green"></div>
+<div class="blob blob-purple"></div>
+
+<!-- Navbar -->
+<nav class="navbar">
+<div class="nav-inner">
+  <a href="/" class="nav-logo"><span class="logo-icon">🌿</span> Eco Traveller</a>
+  <div class="nav-links">
+    <a href="/" class="nav-link active">Home</a>
+    <a href="/calculator.html" class="nav-link">Calculator</a>
+    <a href="/community.html" class="nav-link">Community</a>
+    <a href="/dashboard.html" class="nav-link">Dashboard</a>
+    <div id="authButtons"><a href="/login.html" class="btn btn-sm">Login</a></div>
+  </div>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('show')" aria-label="Menu">☰</button>
 </div>
 </nav>
 
-<section class="h-screen flex items-center justify-center bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee');">
-<div class="text-center backdrop-blur-sm bg-black/30 p-10 rounded-2xl">
-<h1 class="text-5xl font-bold">Travel the World, Save the Planet.</h1>
-<p class="mt-4 text-xl">AI-powered itineraries and verified green stays.</p>
+<!-- Hero -->
+<section class="hero">
+<div class="hero-content">
+  <div class="hero-badge">🌍 AI-Powered Eco Routing</div>
+  <h1 class="hero-title">Smart Travel.<br><span class="gradient-text">Sustainable Future.</span></h1>
+  <p class="hero-sub">Compare routes, track carbon footprint, and travel responsibly — powered by OpenStreetMap.</p>
 
-<div class="mt-6 bg-white/10 backdrop-blur-lg p-6 rounded-xl">
-<input id="from" placeholder="From" class="text-black p-2 m-2 rounded">
-<input id="to" placeholder="To" class="text-black p-2 m-2 rounded">
-<button onclick="calc()" class="bg-emerald-500 px-4 py-2 rounded hover:bg-emerald-600">Calculate</button>
-</div>
-
+  <div class="hero-card glass-card">
+    <div class="input-row">
+      <div class="input-group">
+        <label>From</label>
+        <div class="input-wrap"><span class="input-icon">📍</span><input id="from" placeholder="e.g. Chennai"></div>
+      </div>
+      <div class="input-group">
+        <label>To</label>
+        <div class="input-wrap"><span class="input-icon">🏁</span><input id="to" placeholder="e.g. Bangalore"></div>
+      </div>
+    </div>
+    <div class="input-row">
+      <div class="input-group">
+        <label>Distance (optional)</label>
+        <div class="input-wrap"><span class="input-icon">📏</span><input id="distance" type="number" placeholder="Auto-detected from map"></div>
+      </div>
+      <div class="input-group">
+        <label>Vehicle</label>
+        <div class="input-wrap"><span class="input-icon">🚗</span>
+          <select id="vehicle">
+            <option value="petrol">Petrol Car</option>
+            <option value="diesel">Diesel Car</option>
+            <option value="ev">Electric Vehicle</option>
+            <option value="public">Public Transport</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-lg btn-full" onclick="analyzeRoute()" id="analyzeBtn">
+      <span class="btn-icon">🌿</span> Analyze Eco Route
+    </button>
+  </div>
 </div>
 </section>
 
-<section id="stats" class="py-20 grid grid-cols-3 text-center bg-slate-800">
-<div>
-<h2 class="text-4xl font-bold text-emerald-400">12000+</h2>
-<p class="mt-2">Verified Stays</p>
-</div>
-<div>
-<h2 class="text-4xl font-bold text-emerald-400">500 Tons</h2>
-<p class="mt-2">CO2 Saved</p>
-</div>
-<div>
-<h2 class="text-4xl font-bold text-emerald-400">25 Countries</h2>
-<p class="mt-2">Covered</p>
+<!-- SVG gradient def for score ring -->
+<svg width="0" height="0"><defs><linearGradient id="ecoGrad"><stop offset="0%" stop-color="#0EA5E9"/><stop offset="100%" stop-color="#22C55E"/></linearGradient></defs></svg>
+
+<!-- Route Results -->
+<section id="routeResults" class="section hidden">
+<div class="container">
+  <div class="section-header">
+    <div class="section-badge">Route Analysis</div>
+    <h2 class="section-title">Route Comparison</h2>
+    <p class="section-sub" id="routeSubtitle"></p>
+  </div>
+  <div class="route-grid" id="routeCards"></div>
+
+  <!-- Eco Score -->
+  <div class="eco-score-panel glass-card">
+    <div class="eco-score-ring">
+      <svg viewBox="0 0 120 120" class="score-svg">
+        <circle cx="60" cy="60" r="52" class="score-bg"/>
+        <circle id="ecoCircle" cx="60" cy="60" r="52" class="score-fill" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+      </svg>
+      <div class="score-value"><span id="ecoScoreVal">0</span></div>
+    </div>
+    <div class="eco-score-info">
+      <h3 id="ecoScoreLabel">Calculating...</h3>
+      <div class="eco-bar-wrap"><div id="ecoBar" class="eco-bar"></div></div>
+      <p class="text-muted" id="ecoScoreDesc"></p>
+    </div>
+  </div>
+
+  <!-- Carbon Summary -->
+  <div class="carbon-summary glass-card" id="carbonSummary"></div>
 </div>
 </section>
 
-<section id="stays" class="max-w-7xl mx-auto py-20 px-4">
-<div class="flex justify-between items-center mb-10">
-<h2 class="text-3xl font-bold">Featured Eco Stays</h2>
-<a href="/stays.html" class="text-emerald-400 hover:text-emerald-300">View All →</a>
+<!-- Stats -->
+<section class="section stats-section">
+<div class="container">
+  <div class="stats-grid">
+    <div class="stat-item"><span class="stat-num">12,000+</span><span class="stat-label">Verified Stays</span></div>
+    <div class="stat-item"><span class="stat-num">500 Tons</span><span class="stat-label">CO₂ Saved</span></div>
+    <div class="stat-item"><span class="stat-num">25+</span><span class="stat-label">Countries</span></div>
+    <div class="stat-item"><span class="stat-num">50K+</span><span class="stat-label">Users</span></div>
+  </div>
 </div>
-<div id="hotels" class="grid md:grid-cols-3 gap-6"></div>
 </section>
 
-<footer class="bg-black p-6 text-center">
-<p>© 2026 Eco Traveller</p>
+<!-- How It Works -->
+<section class="section">
+<div class="container">
+  <div class="section-header">
+    <div class="section-badge">System Flow</div>
+    <h2 class="section-title">How It Works</h2>
+    <p class="section-sub">Four simple steps to greener travel</p>
+  </div>
+  <div class="flow-grid">
+    <div class="flow-card"><div class="flow-num">01</div><div class="flow-icon">📍</div><h3>Enter Route</h3><p>Source, destination & vehicle type</p></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-card"><div class="flow-num">02</div><div class="flow-icon">🔍</div><h3>Route Analysis</h3><p>Real-time map data via OSRM</p></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-card"><div class="flow-num">03</div><div class="flow-icon">🧮</div><h3>Carbon Calc</h3><p>CO₂ & fuel per route option</p></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-card"><div class="flow-num">04</div><div class="flow-icon">🌿</div><h3>Eco Pick</h3><p>Best green route recommended</p></div>
+  </div>
+</div>
+</section>
+
+
+<!-- Future Scope -->
+<section class="section">
+<div class="container">
+  <div class="section-header">
+    <div class="section-badge">Roadmap</div>
+    <h2 class="section-title">Future Scope</h2>
+  </div>
+  <div class="future-grid">
+    <div class="future-card future-purple"><div class="future-icon">🤖</div><h3>AI Traffic Prediction</h3><p>ML models for congestion-aware routing</p></div>
+    <div class="future-card future-cyan"><div class="future-icon">🔋</div><h3>EV Charging Map</h3><p>Real-time charging station integration</p></div>
+    <div class="future-card future-orange"><div class="future-icon">🚇</div><h3>Multi-Modal Transit</h3><p>Metro, bus & train schedule integration</p></div>
+    <div class="future-card future-rose"><div class="future-icon">📡</div><h3>Live Traffic API</h3><p>Dynamic route recalculation</p></div>
+  </div>
+</div>
+</section>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <span class="nav-logo"><span class="logo-icon">🌿</span> Eco Traveller</span>
+    <span class="text-muted">© 2026 Eco Traveller. Built for a sustainable future.</span>
+  </div>
 </footer>
 
 <script>
-async function loadHotels(){
-const res = await fetch('/api/hotels');
-const hotels = await res.json();
+const VEHICLE_MAP = { petrol:'petrol', diesel:'diesel', ev:'ev', public:'public' };
 
-const container = document.getElementById('hotels');
+async function analyzeRoute() {
+  const from = document.getElementById('from').value.trim();
+  const to = document.getElementById('to').value.trim();
+  const distInput = document.getElementById('distance').value;
+  const vehicle = document.getElementById('vehicle').value;
+  if (!from || !to) { alert('Please enter source and destination.'); return; }
 
-hotels.forEach(h=>{
-const card = `
-<div class="bg-white/10 backdrop-blur-lg rounded-xl overflow-hidden hover:scale-105 transition cursor-pointer">
-<img src="${h.imageUrl}" class="w-full h-40 object-cover">
-<div class="p-4">
-<h3 class="text-xl font-bold">${h.name}</h3>
-<p class="text-gray-300">${h.location}</p>
-<p class="text-2xl font-bold mt-2">$${h.price}<span class="text-sm">/night</span></p>
-<p class="text-emerald-400 font-semibold">CO2 ${h.co2Savings}</p>
-<div class="flex gap-2 mt-2 flex-wrap">
-${h.tags.map(tag=>`<span class="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded text-xs">${tag}</span>`).join('')}
-</div>
-</div>
-</div>`;
+  const btn = document.getElementById('analyzeBtn');
+  btn.innerHTML = '<span class="shimmer-text">⏳ Analyzing route...</span>';
+  btn.disabled = true;
 
-container.innerHTML += card;
-});
+  let routes, savings, note, baseDist;
+  try {
+    const res = await fetch('/api/route/compare', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ source:from, destination:to, vehicleType:VEHICLE_MAP[vehicle]||'petrol' })
+    });
+    const data = await res.json();
+    if (data.success) {
+      routes = data.routes.map(r=>({type:r.type,icon:r.icon,dist:r.distanceKm,time:r.durationMin,fuel:r.fuelUsed,co2:r.co2Kg,ecoScore:r.ecoScore,recommended:r.recommended||false,timeFormatted:r.timeFormatted}));
+      savings = data.savings; note = data.note; baseDist = data.baseDistance;
+    } else throw new Error(data.error);
+  } catch(err) {
+    console.warn('API fallback:',err.message);
+    const dist = parseFloat(distInput);
+    if (!dist||dist<=0){alert('API unavailable — enter distance manually.');btn.innerHTML='<span class="btn-icon">🌿</span> Analyze Eco Route';btn.disabled=false;return;}
+    const F={petrol:0.171,diesel:0.192,ev:0.05,public:0.08}, R={petrol:15,diesel:18,ev:6,public:35};
+    baseDist=dist;
+    routes=[
+      {type:'Fastest Route',icon:'🚀',dist:Math.round(dist*1.08),time:Math.round(dist*1.08/60*60*0.88),recommended:false},
+      {type:'Shortest Route',icon:'📏',dist:Math.round(dist*0.94),time:Math.round(dist*0.94/60*60*1.12),recommended:false},
+      {type:'Eco-Friendly Route',icon:'🌿',dist:Math.round(dist),time:Math.round(dist/60*60),recommended:true}
+    ];
+    const vt=VEHICLE_MAP[vehicle]||'petrol';
+    routes.forEach(r=>{const m=r.recommended?0.8:1;r.co2=Math.round(r.dist*F[vt]*m*100)/100;r.fuel=Math.round(r.dist/R[vt]*(r.recommended?0.85:1)*100)/100;r.ecoScore=Math.min(100,Math.max(10,Math.round((1-r.co2/(dist*0.171))*85+15)));r.timeFormatted=`${Math.floor(r.time/60)}h ${r.time%60}m`;});
+    const pb=Math.round(dist*0.171*100)/100,eco=routes.find(r=>r.recommended);
+    savings={co2Saved:Math.max(0,Math.round((pb-eco.co2)*100)/100),fuelSaved:0};
+    note='Client-side fallback';
+  }
+  btn.innerHTML='<span class="btn-icon">🌿</span> Analyze Eco Route';btn.disabled=false;
+  renderResults(routes,savings,note,from,to,vehicle,baseDist);
 }
 
-function calc(){
-alert("You saved 124kg of CO2 by choosing train over flight.");
+function renderResults(routes,savings,note,from,to,vehicle,baseDist){
+  const colors={fastest:'card-blue',shortest:'card-purple',eco:'card-green'};
+  const cardsEl=document.getElementById('routeCards');
+  cardsEl.innerHTML=routes.map((r,i)=>{
+    const cls=r.recommended?'card-green':i===0?'card-blue':'card-purple';
+    return `
+    <div class="route-card glass-card ${cls} ${r.recommended?'recommended':''}" style="animation-delay:${i*0.1}s">
+      ${r.recommended?'<div class="rec-badge">⭐ Recommended</div>':''}
+      <div class="route-header"><span class="route-icon">${r.icon}</span><h3>${r.type}</h3></div>
+      <div class="route-stats">
+        <div class="route-stat"><span class="stat-icon">📏</span><span class="stat-val">${r.dist} km</span><span class="stat-lbl">Distance</span></div>
+        <div class="route-stat"><span class="stat-icon">⏱️</span><span class="stat-val">${r.timeFormatted||Math.floor(r.time/60)+'h '+r.time%60+'m'}</span><span class="stat-lbl">Duration</span></div>
+        <div class="route-stat"><span class="stat-icon">⛽</span><span class="stat-val">${r.fuel} L</span><span class="stat-lbl">Fuel</span></div>
+        <div class="route-stat"><span class="stat-icon">💨</span><span class="stat-val">${r.co2} kg</span><span class="stat-lbl">CO₂</span></div>
+      </div>
+      <div class="route-score"><span class="score-pill ${r.ecoScore>=70?'score-high':r.ecoScore>=40?'score-mid':'score-low'}">🌱 ${r.ecoScore}/100</span></div>
+    </div>`;
+  }).join('');
+
+  const eco=routes.find(r=>r.recommended)||routes[2];
+  const circ=326.73;
+  setTimeout(()=>{document.getElementById('ecoCircle').style.strokeDashoffset=circ-(circ*eco.ecoScore/100);},200);
+  document.getElementById('ecoScoreVal').textContent=eco.ecoScore;
+  document.getElementById('ecoBar').style.width=eco.ecoScore+'%';
+  document.getElementById('ecoScoreLabel').textContent=eco.ecoScore>=70?'🎉 Excellent Eco Choice!':eco.ecoScore>=40?'👍 Good, room to improve':'⚠️ Consider greener options';
+  document.getElementById('ecoScoreDesc').textContent=`${eco.co2} kg CO₂ · ${eco.fuel}L fuel · ${eco.dist} km via ${vehicle}`;
+
+  const petrolCo2=Math.round(eco.dist*0.192*100)/100;
+  const saved=savings.co2Saved||Math.max(0,Math.round((petrolCo2-eco.co2)*100)/100);
+  document.getElementById('carbonSummary').innerHTML=`
+    <h3>💚 Carbon Savings</h3>
+    <div class="carbon-grid">
+      <div class="carbon-item"><span class="carbon-val text-danger">${petrolCo2} kg</span><span class="carbon-lbl">Petrol Baseline</span></div>
+      <div class="carbon-item"><span class="carbon-val text-success">${eco.co2} kg</span><span class="carbon-lbl">Your Eco Route</span></div>
+      <div class="carbon-item"><span class="carbon-val text-accent">${saved} kg</span><span class="carbon-lbl">CO₂ Saved 🎉</span></div>
+    </div>
+    <p class="carbon-note">📡 ${note}</p>`;
+
+  document.getElementById('routeSubtitle').textContent=`${from} → ${to} · ${baseDist} km · ${vehicle}`;
+  document.getElementById('routeResults').classList.remove('hidden');
+  document.getElementById('routeResults').scrollIntoView({behavior:'smooth'});
+
+  const stats=JSON.parse(localStorage.getItem('ecoStats')||'{"totalDistance":0,"fuelSaved":0,"co2Saved":0,"ecoTrips":0,"avgScore":0,"trips":[]}');
+  stats.totalDistance+=eco.dist;stats.fuelSaved+=savings.fuelSaved||0;stats.co2Saved+=saved;stats.ecoTrips+=1;
+  stats.trips.push({from,to,distance:eco.dist,vehicle,ecoScore:eco.ecoScore,co2Saved:saved,date:new Date().toISOString()});
+  const sc=stats.trips.map(t=>t.ecoScore);stats.avgScore=Math.round(sc.reduce((a,b)=>a+b,0)/sc.length);
+  localStorage.setItem('ecoStats',JSON.stringify(stats));
 }
 
-// Check if user is logged in
-const user = JSON.parse(localStorage.getItem('user') || 'null');
-const authButtons = document.getElementById('authButtons');
-if(user){
-authButtons.innerHTML = `
-<span class="text-gray-300">Hi, ${user.name}</span>
-<button onclick="logout()" class="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600">Logout</button>
-`;
-}
-
-function logout(){
-localStorage.removeItem('user');
-window.location.reload();
-}
-
-loadHotels();
+const user=JSON.parse(localStorage.getItem('user')||'null');
+if(user){document.getElementById('authButtons').innerHTML=`<span class="text-muted">Hi, ${user.name}</span><button onclick="localStorage.removeItem('user');location.reload()" class="btn btn-sm btn-outline">Logout</button>`;}
 </script>
-
 </body>
 </html>

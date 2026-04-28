@@ -9,6 +9,10 @@ require('dotenv').config();
 const Hotel = require('./models/Hotel');
 const User = require('./models/User');
 
+// Eco route API routes
+const routeRoutes = require('./routes/routeRoutes');
+const carbonRoutes = require('./routes/carbonRoutes');
+
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -418,6 +422,10 @@ app.get('/api/debug/users', isAdmin, (req, res) => {
     });
   }
 });
+
+// Mount eco route API endpoints
+app.use('/api/route', routeRoutes);
+app.use('/api/carbon', carbonRoutes);
 
 app.listen(5000,()=>console.log('Server running on port 5000'));
 

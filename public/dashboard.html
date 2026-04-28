@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Eco Traveller</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="blob blob-blue"></div>
+<div class="blob blob-green"></div>
+<svg width="0" height="0"><defs><linearGradient id="ecoGrad"><stop offset="0%" stop-color="#0EA5E9"/><stop offset="100%" stop-color="#22C55E"/></linearGradient></defs></svg>
+
+<nav class="navbar">
+<div class="nav-inner">
+  <a href="/" class="nav-logo"><span class="logo-icon">🌿</span> Eco Traveller</a>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Home</a>
+    <a href="/calculator.html" class="nav-link">Calculator</a>
+    <a href="/community.html" class="nav-link">Community</a>
+    <a href="/dashboard.html" class="nav-link active">Dashboard</a>
+    <div id="authButtons"><a href="/login.html" class="btn btn-sm">Login</a></div>
+  </div>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</button>
+</div>
+</nav>
+
+<div class="section" style="padding-top:100px">
+<div class="container">
+
+  <div class="section-header" style="text-align:left">
+    <div class="section-badge">Analytics</div>
+    <h1 class="section-title">Smart Dashboard</h1>
+    <p class="section-sub">Your personal eco travel impact at a glance</p>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="dash-grid" style="margin-bottom:40px">
+    <div class="dash-card dash-blue glass-card"><div class="dash-icon">🛣️</div><div class="dash-label">Total Distance</div><div class="dash-val" id="totalDistance">0</div><div class="dash-sub">km searched</div></div>
+    <div class="dash-card dash-green glass-card"><div class="dash-icon">⛽</div><div class="dash-label">Fuel Saved</div><div class="dash-val" id="fuelSaved">0</div><div class="dash-sub">litres estimated</div></div>
+    <div class="dash-card dash-emerald glass-card"><div class="dash-icon">🌿</div><div class="dash-label">CO₂ Saved</div><div class="dash-val" id="co2Saved">0</div><div class="dash-sub">kg reduced</div></div>
+    <div class="dash-card dash-amber glass-card"><div class="dash-icon">🌍</div><div class="dash-label">Eco Trips</div><div class="dash-val" id="ecoTrips">0</div><div class="dash-sub">routes analyzed</div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px">
+    <!-- Eco Score Ring -->
+    <div class="glass-card" style="padding:32px">
+      <h3 style="margin-bottom:20px;font-size:18px;font-weight:700">Average Eco Score</h3>
+      <div style="display:flex;align-items:center;gap:28px">
+        <div class="eco-score-ring">
+          <svg viewBox="0 0 120 120" class="score-svg">
+            <circle cx="60" cy="60" r="52" class="score-bg"/>
+            <circle id="scoreCircle" cx="60" cy="60" r="52" class="score-fill" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+          </svg>
+          <div class="score-value"><span id="avgScoreText">0</span></div>
+        </div>
+        <div>
+          <p class="text-muted" style="margin-bottom:12px">Higher is better — aim for 80+</p>
+          <div style="display:flex;gap:8px">
+            <span class="score-pill score-low" style="font-size:11px">0–40</span>
+            <span class="score-pill score-mid" style="font-size:11px">41–70</span>
+            <span class="score-pill score-high" style="font-size:11px">71–100</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Impact Equivalents -->
+    <div class="glass-card" style="padding:32px">
+      <h3 style="margin-bottom:20px;font-size:18px;font-weight:700">Impact in Perspective</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;text-align:center">
+        <div><div style="font-size:36px;margin-bottom:6px">🌳</div><div style="font-size:24px;font-weight:800" id="treesEquiv">0</div><div class="dash-sub">trees / year</div></div>
+        <div><div style="font-size:36px;margin-bottom:6px">🚗</div><div style="font-size:24px;font-weight:800" id="carKmEquiv">0</div><div class="dash-sub">car km offset</div></div>
+        <div><div style="font-size:36px;margin-bottom:6px">💡</div><div style="font-size:24px;font-weight:800" id="bulbEquiv">0</div><div class="dash-sub">LED hours</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trip History -->
+  <div class="glass-card" style="padding:0;overflow:hidden;margin-bottom:40px">
+    <div style="padding:20px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
+      <h3 style="font-size:18px;font-weight:700">Recent Trip Analyses</h3>
+      <button onclick="clearHistory()" class="btn btn-sm btn-outline" style="color:var(--rose);border-color:rgba(244,63,94,0.3)">Clear</button>
+    </div>
+    <div id="tripHistory" style="padding:16px 24px"></div>
+  </div>
+
+</div>
+</div>
+
+<footer class="footer"><div class="container footer-inner"><span class="nav-logo"><span class="logo-icon">🌿</span> Eco Traveller</span><span class="text-muted">© 2026</span></div></footer>
+
+<script>
+function getStats(){return JSON.parse(localStorage.getItem('ecoStats')||'{"totalDistance":0,"fuelSaved":0,"co2Saved":0,"ecoTrips":0,"avgScore":0,"trips":[]}')}
+function anim(el,target){let c=0;const s=Math.max(1,Math.ceil(target/35));const i=setInterval(()=>{c+=s;if(c>=target){c=target;clearInterval(i)}el.textContent=Math.round(c).toLocaleString()},25)}
+
+function render(){
+  const s=getStats();
+  anim(document.getElementById('totalDistance'),Math.round(s.totalDistance));
+  anim(document.getElementById('fuelSaved'),Math.round(s.fuelSaved*10)/10);
+  anim(document.getElementById('co2Saved'),Math.round(s.co2Saved*10)/10);
+  anim(document.getElementById('ecoTrips'),s.ecoTrips);
+
+  const avg=s.avgScore||0;
+  setTimeout(()=>{document.getElementById('scoreCircle').style.strokeDashoffset=326.73-(326.73*avg/100);document.getElementById('avgScoreText').textContent=Math.round(avg)},300);
+
+  document.getElementById('treesEquiv').textContent=(Math.round(s.co2Saved/21*10)/10)||0;
+  document.getElementById('carKmEquiv').textContent=Math.round(s.co2Saved/0.192)||0;
+  document.getElementById('bulbEquiv').textContent=(Math.round(s.co2Saved/0.01)).toLocaleString()||0;
+
+  const trips=s.trips||[];
+  const h=document.getElementById('tripHistory');
+  if(!trips.length){h.innerHTML='<p class="text-muted" style="text-align:center;padding:32px 0">No trips yet. <a href="/" class="link">Analyze your first route →</a></p>';return}
+  h.innerHTML=trips.slice().reverse().slice(0,10).map(t=>`
+    <div class="trip-item">
+      <div class="trip-left">
+        <div class="trip-dot ${t.ecoScore>=71?'trip-dot-green':t.ecoScore>=41?'trip-dot-yellow':'trip-dot-red'}">${t.ecoScore>=71?'🌿':t.ecoScore>=41?'🔶':'🔴'}</div>
+        <div><div class="trip-route">${t.from} → ${t.to}</div><div class="trip-meta">${t.distance} km · ${t.vehicle} · ${new Date(t.date).toLocaleDateString()}</div></div>
+      </div>
+      <div class="trip-right"><div class="trip-score ${t.ecoScore>=71?'text-success':t.ecoScore>=41?'':''}">${t.ecoScore}/100</div><div class="trip-saved">${t.co2Saved.toFixed(1)} kg saved</div></div>
+    </div>`).join('');
+}
+function clearHistory(){if(confirm('Clear all data?')){localStorage.removeItem('ecoStats');location.reload()}}
+
+const user=JSON.parse(localStorage.getItem('user')||'null');
+if(user){document.getElementById('authButtons').innerHTML=`<span class="text-muted">Hi, ${user.name}</span><button onclick="localStorage.removeItem('user');location.reload()" class="btn btn-sm btn-outline">Logout</button>`}
+render();
+</script>
+</body>
+</html>

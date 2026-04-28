@@ -3,185 +3,76 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Eco Traveller</title>
-<script src="https://cdn.tailwindcss.com"></script>
+<title>Login — Eco Traveller</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<style>.auth-card{max-width:440px;margin:0 auto;padding:40px}</style>
 </head>
-<body class="bg-slate-900 text-white">
+<body>
+<div class="blob blob-blue"></div>
+<div class="blob blob-green"></div>
 
-<nav class="fixed w-full backdrop-blur-lg bg-white/10 border-b border-white/10 z-50">
-<div class="max-w-7xl mx-auto flex justify-between p-4">
-<h1 class="text-emerald-400 font-bold text-xl"><a href="/">Eco Traveller</a></h1>
-<div class="space-x-6">
-<a href="/" class="hover:text-emerald-400">Home</a>
-<a href="/calculator.html" class="hover:text-emerald-400">Calculator</a>
-<a href="/stays.html" class="hover:text-emerald-400">Verified Stays</a>
-<a href="/community.html" class="hover:text-emerald-400">Community</a>
-</div>
-</div>
-</nav>
+<nav class="navbar"><div class="nav-inner">
+  <a href="/" class="nav-logo"><span class="logo-icon">🌿</span> Eco Traveller</a>
+  <div class="nav-links">
+    <a href="/" class="nav-link">Home</a><a href="/calculator.html" class="nav-link">Calculator</a>
+    <a href="/community.html" class="nav-link">Community</a>
+    <a href="/dashboard.html" class="nav-link">Dashboard</a>
+  </div>
+  <button class="mobile-menu-btn" onclick="document.querySelector('.nav-links').classList.toggle('show')">☰</button>
+</div></nav>
 
-<div class="min-h-screen flex items-center justify-center px-4 pt-20 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920');">
-<div class="backdrop-blur-xl bg-black/40 p-10 rounded-2xl max-w-md w-full border border-white/10">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 24px 40px">
+<div class="glass-card auth-card">
+  <div style="text-align:center;margin-bottom:32px">
+    <div style="font-size:48px;margin-bottom:12px">🌿</div>
+    <h1 style="font-size:28px;font-weight:800;margin-bottom:4px">Welcome Back</h1>
+    <p class="text-muted">Continue your eco journey</p>
+  </div>
 
-<div class="text-center mb-8">
-<h1 class="text-4xl font-bold mb-2">Welcome Back</h1>
-<p class="text-gray-300">Login to continue your eco journey</p>
-</div>
+  <div style="display:flex;gap:8px;margin-bottom:24px">
+    <button onclick="showLogin()" id="loginTab" class="btn btn-primary" style="flex:1">Login</button>
+    <button onclick="showSignup()" id="signupTab" class="btn btn-outline" style="flex:1">Sign Up</button>
+  </div>
 
-<div class="flex gap-4 mb-6">
-<button onclick="showLogin()" id="loginTab" class="flex-1 py-2 rounded-lg bg-emerald-500 font-bold">Login</button>
-<button onclick="showSignup()" id="signupTab" class="flex-1 py-2 rounded-lg bg-white/10 font-bold">Sign Up</button>
-</div>
+  <form id="loginForm" style="display:flex;flex-direction:column;gap:16px">
+    <div class="input-group"><label>Email</label><div class="input-wrap"><input type="email" id="loginEmail" placeholder="your@email.com" required></div></div>
+    <div class="input-group"><label>Password</label><div class="input-wrap"><input type="password" id="loginPassword" placeholder="••••••••" required></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><label style="display:flex;align-items:center;gap:6px"><input type="checkbox"> Remember me</label><a href="#" class="link">Forgot password?</a></div>
+    <button type="submit" class="btn btn-primary btn-lg btn-full">Login</button>
+    <div style="text-align:center;font-size:13px;color:var(--text-muted)">or continue with</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <a href="/auth/google" class="btn btn-outline" style="font-size:13px">G Google</a>
+      <button type="button" class="btn btn-outline" style="font-size:13px">📘 Facebook</button>
+    </div>
+  </form>
 
-<!-- Login Form -->
-<form id="loginForm" class="space-y-4">
-<div>
-<label class="block mb-2 text-sm">Email</label>
-<input type="email" id="loginEmail" placeholder="your@email.com" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
-</div>
-
-<div>
-<label class="block mb-2 text-sm">Password</label>
-<input type="password" id="loginPassword" placeholder="••••••••" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
-</div>
-
-<div class="flex justify-between items-center text-sm">
-<label class="flex items-center">
-<input type="checkbox" class="mr-2">
-<span>Remember me</span>
-</label>
-<a href="#" class="text-emerald-400 hover:text-emerald-300">Forgot password?</a>
-</div>
-
-<button type="submit" class="w-full bg-emerald-500 py-3 rounded-lg font-bold hover:bg-emerald-600 transition">
-Login
-</button>
-
-<div class="text-center text-sm text-gray-400 my-4">or continue with</div>
-
-<div class="grid grid-cols-2 gap-4">
-<a href="/auth/google" class="bg-white text-black py-2 rounded-lg hover:bg-gray-100 transition text-center font-semibold">
-<span class="text-red-500">G</span> Google
-</a>
-<button type="button" class="bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition">
-📘 Facebook
-</button>
-</div>
-</form>
-
-<!-- Signup Form -->
-<form id="signupForm" class="space-y-4 hidden">
-<div>
-<label class="block mb-2 text-sm">Full Name</label>
-<input type="text" id="signupName" placeholder="John Doe" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
-</div>
-
-<div>
-<label class="block mb-2 text-sm">Email</label>
-<input type="email" id="signupEmail" placeholder="your@email.com" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
-</div>
-
-<div>
-<label class="block mb-2 text-sm">Password</label>
-<input type="password" id="signupPassword" placeholder="••••••••" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
-</div>
-
-<div>
-<label class="block mb-2 text-sm">Confirm Password</label>
-<input type="password" id="signupConfirm" placeholder="••••••••" class="w-full p-3 rounded-lg bg-slate-800 border border-slate-700 focus:border-emerald-500 focus:outline-none" required>
-</div>
-
-<label class="flex items-center text-sm">
-<input type="checkbox" class="mr-2" required>
-<span>I agree to the <a href="#" class="text-emerald-400">Terms & Conditions</a></span>
-</label>
-
-<button type="submit" class="w-full bg-emerald-500 py-3 rounded-lg font-bold hover:bg-emerald-600 transition">
-Create Account
-</button>
-</form>
-
+  <form id="signupForm" style="display:none;flex-direction:column;gap:16px">
+    <div class="input-group"><label>Full Name</label><div class="input-wrap"><input type="text" id="signupName" placeholder="John Doe" required></div></div>
+    <div class="input-group"><label>Email</label><div class="input-wrap"><input type="email" id="signupEmail" placeholder="your@email.com" required></div></div>
+    <div class="input-group"><label>Password</label><div class="input-wrap"><input type="password" id="signupPassword" placeholder="••••••••" required></div></div>
+    <div class="input-group"><label>Confirm Password</label><div class="input-wrap"><input type="password" id="signupConfirm" placeholder="••••••••" required></div></div>
+    <label style="font-size:13px;display:flex;align-items:center;gap:6px"><input type="checkbox" required> I agree to <a href="#" class="link">Terms</a></label>
+    <button type="submit" class="btn btn-primary btn-lg btn-full">Create Account</button>
+  </form>
 </div>
 </div>
 
 <script>
-function showLogin() {
-  document.getElementById('loginForm').classList.remove('hidden');
-  document.getElementById('signupForm').classList.add('hidden');
-  document.getElementById('loginTab').classList.add('bg-emerald-500');
-  document.getElementById('loginTab').classList.remove('bg-white/10');
-  document.getElementById('signupTab').classList.remove('bg-emerald-500');
-  document.getElementById('signupTab').classList.add('bg-white/10');
-}
+function showLogin(){document.getElementById('loginForm').style.display='flex';document.getElementById('signupForm').style.display='none';document.getElementById('loginTab').className='btn btn-primary';document.getElementById('signupTab').className='btn btn-outline';document.getElementById('loginTab').style.flex='1';document.getElementById('signupTab').style.flex='1'}
+function showSignup(){document.getElementById('loginForm').style.display='none';document.getElementById('signupForm').style.display='flex';document.getElementById('signupTab').className='btn btn-primary';document.getElementById('loginTab').className='btn btn-outline';document.getElementById('loginTab').style.flex='1';document.getElementById('signupTab').style.flex='1'}
 
-function showSignup() {
-  document.getElementById('loginForm').classList.add('hidden');
-  document.getElementById('signupForm').classList.remove('hidden');
-  document.getElementById('signupTab').classList.add('bg-emerald-500');
-  document.getElementById('signupTab').classList.remove('bg-white/10');
-  document.getElementById('loginTab').classList.remove('bg-emerald-500');
-  document.getElementById('loginTab').classList.add('bg-white/10');
-}
-
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
+document.getElementById('loginForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-
-  try {
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      localStorage.setItem('user', JSON.stringify(data.user));
-      alert('Login successful!');
-      window.location.href = '/';
-    } else {
-      alert(data.error || 'Login failed');
-    }
-  } catch (err) {
-    alert('Login error');
-  }
+  try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:document.getElementById('loginEmail').value,password:document.getElementById('loginPassword').value})});const d=await r.json();if(r.ok){localStorage.setItem('user',JSON.stringify(d.user));alert('Login successful!');window.location.href='/'}else alert(d.error||'Login failed')}catch(e){alert('Login error')}
 });
 
-document.getElementById('signupForm').addEventListener('submit', async (e) => {
+document.getElementById('signupForm').addEventListener('submit',async e=>{
   e.preventDefault();
-  const name = document.getElementById('signupName').value;
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPassword').value;
-  const confirm = document.getElementById('signupConfirm').value;
-
-  if (password !== confirm) {
-    alert('Passwords do not match');
-    return;
-  }
-
-  try {
-    const res = await fetch('/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      localStorage.setItem('user', JSON.stringify(data.user));
-      alert('Account created successfully!');
-      window.location.href = '/';
-    } else {
-      alert(data.error || 'Signup failed');
-    }
-  } catch (err) {
-    alert('Signup error');
-  }
+  const p=document.getElementById('signupPassword').value;
+  if(p!==document.getElementById('signupConfirm').value){alert('Passwords do not match');return}
+  try{const r=await fetch('/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:document.getElementById('signupName').value,email:document.getElementById('signupEmail').value,password:p})});const d=await r.json();if(r.ok){localStorage.setItem('user',JSON.stringify(d.user));alert('Account created!');window.location.href='/'}else alert(d.error||'Signup failed')}catch(e){alert('Signup error')}
 });
 </script>
-
 </body>
 </html>
